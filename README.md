@@ -1,4 +1,5 @@
-CONSOLE GAMES by Leon Broda
+# Console Games
+##by Leon Broda
 
 To choose a field on a board type in the row number first and the column number second.
 You do not need any charcter or blank space in between.
