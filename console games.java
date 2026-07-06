@@ -605,8 +605,7 @@ class MemoryGameBoard {
 			System.out.printf("\n");
 		}
 	}
-	public void displayBoard()
-	{
+	public void displayBoard() {
 		for (int i = 0; i < row; i++) {
 			for (int j = 0; j < col; j++) {
 				System.out.printf(board[i][j] + " ");
@@ -618,6 +617,7 @@ class MemoryGameBoard {
 		do {
 			display();
 			requestInputMove(players[nextPlayer]);
+			System.out.print("\033[H\033[2J");
 			compareSymbols(players[nextPlayer]);
 		} while (isPair(players[nextPlayer].input1, players[nextPlayer].input2) && !isFinished(players));
 
@@ -628,8 +628,7 @@ class MemoryGameBoard {
 		}
 		return 0;
 	}
-	private void requestInputMove(MemoryPlayer player)
-	{
+	private void requestInputMove(MemoryPlayer player) {
 		do {
 			player.input1 = inputNumber(player.name + ", enter your first move: ");
 		} while (!isInputValid(player.input1, 0));
@@ -640,8 +639,7 @@ class MemoryGameBoard {
 		} while (!isInputValid(player.input2, player.input1));
 		System.out.println(board[rowNum(player.input2)][colNum(player.input2)]);
 	}
-	private boolean isInputValid(int input, int input1)
-	{
+	private boolean isInputValid(int input, int input1) {
 		try {
 			if (state[rowNum(input)][colNum(input)]) {
 				System.out.println("invalid input");
@@ -657,8 +655,8 @@ class MemoryGameBoard {
 		}
 		return true;
 	}
-	private void compareSymbols(MemoryPlayer player)
-	{
+	private void compareSymbols(MemoryPlayer player) {
+		System.out.println(player.input1 + " = " + board[rowNum(player.input1)][colNum(player.input1)] + " | " + player.input2 + " = " + board[rowNum(player.input2)][colNum(player.input2)]);
 		if (isPair(player.input1, player.input2)) {
 			player.numberOfPairs++;
 			state[rowNum(player.input1)][colNum(player.input1)] = true;
@@ -697,12 +695,11 @@ class CheckersGame {
 		gameBoard.setup(player1.symbol, player2.symbol);
 
 		short nextPlayer = determineBeginner(player1.name, player2.name);
-		while (player1.remainingCounters > 0 && player2.remainingCounters > 0 && gameBoard.isTurnPossible(nextPlayer, player1, player2))
-		{
+		while (player1.remainingCounters > 0 && player2.remainingCounters > 0 && gameBoard.isTurnPossible(nextPlayer, player1, player2)) {
 			gameBoard.display();
 			nextPlayer = gameBoard.enterMove(nextPlayer, player1, player2);
 		}
-		System.out.printf(gameBoard.findWinnerName(player1, player2, nextPlayer) + " won.");
+		System.out.printf(findWinnerName(nextPlayer) + " won.");
 	}
 	private void initializePlayers() {
 		ArrayList<Character> alreadyUsedSymbols = new ArrayList<>();
@@ -721,6 +718,23 @@ class CheckersGame {
 			System.out.println(name2 + " begins.");
 		}
 		return nextPlayer;
+	}
+	public String findWinnerName(short nextPlayer) {
+		if (player1.remainingCounters == 0) {
+			return player2.name;
+		}
+		if (player2.remainingCounters == 0) {
+			return player1.name;
+		}
+		if (!gameBoard.isTurnPossible(nextPlayer, player1, player2)) {
+			if (nextPlayer == player1.number) {
+				return player2.name;
+			}
+			if (nextPlayer == player2.number) {
+				return player1.name;
+			}
+		}
+		return "Nobody";
 	}
 }
 class CheckersPlayer {
@@ -847,23 +861,6 @@ class CheckersGameboard {
 			}
 		}
 		return false;
-	}
-	public String findWinnerName(CheckersPlayer player1, CheckersPlayer player2, short nextPlayer) {
-		if (player1.remainingCounters == 0) {
-			return player2.name;
-		}
-		if (player2.remainingCounters == 0) {
-			return player1.name;
-		}
-		if (!isTurnPossible(nextPlayer, player1, player2)) {
-			if (nextPlayer == player1.number) {
-				return player2.name;
-			}
-			if (nextPlayer == player2.number) {
-				return player1.name;
-			}
-		}
-		return "Nobody";
 	}
 	private void requestInputMove(CheckersPlayer currentTurnPlayer, CheckersPlayer opponent) {
 		Scanner sc = new Scanner(System.in);
